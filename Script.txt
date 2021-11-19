@@ -1,0 +1,120 @@
+====================================
+====== SQL & Python scripts ========
+====================================
+CREATE DATABASE Lib_205;
+GO
+USE Lib_205;
+GO
+CREATE TABLE Borrowers (
+BorrowerID int IDENTITY(-1,1) PRIMARY KEY,
+FirstName varchar(255),
+LastName varchar(255),
+Password varchar(255),
+Email varchar(255),
+Payment float,
+FavoriteGenre varchar(20),
+);
+
+GO
+CREATE TABLE Librarians(
+LibrarianID int IDENTITY(1,1) PRIMARY KEY,
+FirstName varchar(255),
+LastName varchar(255),
+Password varchar(255),
+Email varchar(255),
+);
+GO
+
+CREATE TABLE Books(
+BookID int IDENTITY(1,1) PRIMARY KEY,
+BookName varchar(255),
+Author varchar(255),
+Genre varchar(255),
+LateFee float,
+BorrowDate date,
+Lost int,
+BorrowerID  int FOREIGN KEY REFERENCES Borrowers(BorrowerID)
+);
+
+GO
+
+======== Setup connection  =========
+
+# Define the connection
+conn = pyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
+                      'Server=<Put your server name here>;'
+                      'Database=<Put your database here>;'
+                      'Trusted_Connection=yes;')
+
+======== Create the connection to database =========
+cursor_users = conn.cursor()
+cursor_books = conn.cursor()
+
+======== Close the connection to database =========
+cursor_users.close()
+conn.close()
+
+======== Confirm the change to database =========
+cursor_users.commit()
+
+========  Get data from table =========
+cursor_books.execute("SELECT * FROM Books")
+
+
+======== Get data from table  =========
+cursor_users.execute('''INSERT INTO Lib_User 
+			VALUES (1, 'Steve','Vo','Pa$$w0rd','dvo1@my.bcit.ca',0,'Fiction';''')
+
+cursor_books.execute('''INSERT INTO Books 
+			VALUES (1, 'American Dirt','Jeanine Cummins','Fiction',,0);''')
+
+
+======== Update a record simple without user input  =========
+cursor_users.execute('''
+                UPDATE Lib_User
+                SET Password = 'kickstart'
+                WHERE UserID = 1
+                ''')
+
+======== Update a record in table =========
+
+Step1: create UPDATE string inpython, put ? for value which are inserted
+user will input the value where ? is
+Ex: update_passwd = '''UPDATE Lib_User
+                SET Password = ?
+                WHERE UserID = ?
+                '''
+Step2: Use method execute in cursor
+Ex: cursor_users.execute(update_passwd, new_passwd, 1)
+
+Step3: Confirm the changes, then close the cursor and connection
+cursor_books.commit()
+cursor_users.close()
+conn.close()
+
+======== Insert data to table  =========
+Step1: Create INSERT string in Python, put ? for value which are inserted
+user will input the value where ? is
+Ex: insert_user_query = '''INSERT INTO Lib_User(FirstName, LastName, LoginName, Password, Email, Payment, FavoriteGenre)
+                       VALUES (?,?,?,?,?,?,?);'''
+Step2: Use method execute in cursor
+Ex: cursor_users.execute(insert_user_query, user_first_name, user_last_name, user_login_name, user_password, user_email, user_payment, user_favorite_genre)
+
+Step3: Confirm the change, then close the cursor and connection    
+cursor_users.commit()
+cursor_users.close()
+conn.close()
+
+# format out put string to screen, my screen width is 172
+from colorama import init, Fore, Back, Style
+init() # essential for Windows environment
+
+format_string = '{column1:^86}{column2:^86}'
+print(Fore.RED + '*' * 172)
+print(Fore.BLUE + format_string.format(column1='HELLO WORLD', column2='World'))
+
+
+
+
+
+
